@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>videowares WebVNC - User Manual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #244471;
+    --abyss: #0D1B2A;
+    --dark-navy: #1B3A5C;
+    --cyan: #00B4D8;
+    --sky-cyan: #48CAE4;
+    --mint: #06D6A0;
+    --alert-red: #FF6B6B;
+    --warning-yellow: #E9B44C;
+    --white: #FFFFFF;
+    --frost: #EDF2F7;
+    --cool-gray: #8DA2B8;
+    --border: rgba(0, 180, 216, 0.12);
+    --border-strong: rgba(0, 180, 216, 0.25);
+    --code-bg: #0a1220;
+    --card-bg: rgba(27, 58, 92, 0.25);
+    --sidebar-width: 290px;
+    --heading-font: 'Plus Jakarta Sans', sans-serif;
+    --body-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+  }
+
+  body {
+    font-family: var(--body-font);
+    background: var(--abyss);
+    color: var(--frost);
+    line-height: 1.7;
+    display: flex;
+    min-height: 100vh;
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: linear-gradient(180deg, #0a1526 0%, var(--abyss) 100%);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 0;
+    z-index: 100;
+  }
+
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--dark-navy); border-radius: 4px; }
+
+  .sidebar-header {
+    padding: 28px 24px 22px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(0, 180, 216, 0.06) 0%, transparent 100%);
+  }
+
+  .sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .sidebar-logo .chevrons {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+
+  .sidebar-logo .chevron {
+    width: 6px;
+    height: 14px;
+    background: var(--cyan);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+  }
+
+  .sidebar-logo .chevron:nth-child(2) { opacity: 0.65; }
+  .sidebar-logo .chevron:nth-child(3) { opacity: 0.35; }
+
+  .sidebar-header h2 {
+    font-family: var(--heading-font);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.01em;
+  }
+
+  .sidebar-header .version {
+    font-size: 12px;
+    color: var(--cool-gray);
+    margin-top: 2px;
+    font-weight: 400;
+  }
+
+  .sidebar nav {
+    padding: 16px 0;
+  }
+
+  .sidebar nav ul {
+    list-style: none;
+  }
+
+  .sidebar nav > ul > li {
+    margin-bottom: 1px;
+  }
+
+  .sidebar nav a {
+    display: block;
+    padding: 7px 24px;
+    color: var(--cool-gray);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 400;
+    transition: all 0.15s ease;
+    border-left: 2px solid transparent;
+  }
+
+  .sidebar nav a:hover {
+    color: var(--white);
+    background: rgba(0, 180, 216, 0.06);
+    border-left-color: var(--cyan);
+  }
+
+  .sidebar nav a.active {
+    color: var(--cyan);
+    border-left-color: var(--cyan);
+    background: rgba(0, 180, 216, 0.08);
+    font-weight: 500;
+  }
+
+  .sidebar nav a.section-link {
+    font-weight: 600;
+    color: var(--frost);
+    font-size: 13px;
+    padding: 9px 24px;
+    margin-top: 6px;
+  }
+
+  .sidebar nav a.sub-link {
+    padding-left: 38px;
+    font-size: 12px;
+  }
+
+  /* Main content */
+  .content {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    max-width: 880px;
+    padding: 52px 52px 140px;
+  }
+
+  /* Typography */
+  h1 {
+    font-family: var(--heading-font);
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--white);
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  h1 .brand-cyan { color: var(--cyan); }
+
+  .subtitle {
+    color: var(--cool-gray);
+    font-size: 14px;
+    margin-bottom: 48px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .subtitle .divider-chevron {
+    display: inline-block;
+    width: 5px;
+    height: 10px;
+    background: var(--cyan);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+    opacity: 0.5;
+  }
+
+  h2 {
+    font-family: var(--heading-font);
+    font-size: 28px;
+    font-weight: 700;
+    margin-top: 64px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    color: var(--white);
+    border-bottom: 2px solid var(--border);
+    letter-spacing: -0.01em;
+    position: relative;
+  }
+
+  h2::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--cyan), transparent);
+  }
+
+  h3 {
+    font-family: var(--heading-font);
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 36px;
+    margin-bottom: 14px;
+    color: var(--white);
+    letter-spacing: -0.01em;
+  }
+
+  h4 {
+    font-family: var(--heading-font);
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: 24px;
+    margin-bottom: 10px;
+    color: var(--sky-cyan);
+  }
+
+  p {
+    margin-bottom: 16px;
+    color: var(--frost);
+    font-weight: 400;
+  }
+
+  a { color: var(--cyan); text-decoration: none; transition: color 0.15s; }
+  a:hover { color: var(--sky-cyan); text-decoration: underline; }
+
+  strong { font-weight: 600; color: var(--white); }
+
+  /* Lists */
+  ul, ol {
+    margin-bottom: 16px;
+    padding-left: 24px;
+  }
+
+  li {
+    margin-bottom: 6px;
+    color: var(--frost);
+  }
+
+  li::marker {
+    color: var(--cyan);
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 24px;
+    font-size: 14px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+  }
+
+  thead th {
+    background: rgba(36, 68, 113, 0.5);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--sky-cyan);
+    border-bottom: 1px solid var(--border-strong);
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+
+  td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--frost);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td {
+    background: rgba(0, 180, 216, 0.04);
+  }
+
+  /* Code */
+  code {
+    background: var(--code-bg);
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 13px;
+    color: var(--sky-cyan);
+    border: 1px solid rgba(0, 180, 216, 0.1);
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    overflow-x: auto;
+    margin-bottom: 24px;
+    font-size: 13px;
+    line-height: 1.65;
+    position: relative;
+  }
+
+  pre::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--cyan), transparent);
+    border-radius: 10px 0 0 10px;
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    color: var(--frost);
+    border: none;
+  }
+
+  /* Blockquotes / Notes */
+  blockquote {
+    border-left: 3px solid var(--cyan);
+    background: rgba(0, 180, 216, 0.06);
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    border-radius: 0 10px 10px 0;
+  }
+
+  blockquote p { margin-bottom: 0; }
+  blockquote strong { color: var(--cyan); }
+
+  .warning {
+    border-left-color: var(--warning-yellow);
+    background: rgba(233, 180, 76, 0.06);
+  }
+
+  .warning strong { color: var(--warning-yellow); }
+
+  .danger {
+    border-left-color: var(--alert-red);
+    background: rgba(255, 107, 107, 0.06);
+  }
+
+  .danger strong { color: var(--alert-red); }
+
+  .success {
+    border-left-color: var(--mint);
+    background: rgba(6, 214, 160, 0.06);
+  }
+
+  .success strong { color: var(--mint); }
+
+  /* Diagram */
+  .diagram {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 24px;
+    margin-bottom: 24px;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre;
+    overflow-x: auto;
+    color: var(--sky-cyan);
+    position: relative;
+  }
+
+  .diagram::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--cyan), var(--mint));
+    border-radius: 10px 0 0 10px;
+  }
+
+  /* Horizontal rule */
+  hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, var(--cyan), transparent);
+    margin: 48px 0;
+    opacity: 0.3;
+  }
+
+  /* Back to top */
+  .back-top {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: var(--navy);
+    color: var(--cyan);
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 20px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 200;
+    border: 1px solid var(--border-strong);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .back-top.visible { opacity: 1; }
+  .back-top:hover {
+    background: var(--cyan);
+    color: var(--abyss);
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 96px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--cool-gray);
+    font-size: 13px;
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .footer-brand .chevrons {
+    display: flex;
+    gap: 2px;
+  }
+
+  .footer-brand .chevron {
+    width: 5px;
+    height: 10px;
+    background: var(--cyan);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+    opacity: 0.5;
+  }
+
+  .footer a { color: var(--cyan); }
+
+  /* Mobile */
+  @media (max-width: 960px) {
+    .sidebar { display: none; }
+    .content { margin-left: 0; padding: 28px 20px 100px; }
+    h1 { font-size: 32px; }
+    h2 { font-size: 24px; }
+  }
+
+  /* Print */
+  @media print {
+    .sidebar { display: none; }
+    .content { margin-left: 0; max-width: 100%; }
+    body { background: white; color: #1a1a1a; }
+    h1, h2, h3, h4 { color: #0D1B2A; }
+    h2::after { display: none; }
+    pre::before, .diagram::before { display: none; }
+    h2 { page-break-before: always; border-bottom-color: #ddd; }
+    pre, table { page-break-inside: avoid; }
+    table { border-color: #ddd; }
+    thead th { background: #f0f4f8; color: #244471; border-bottom-color: #ccc; }
+    td { border-bottom-color: #eee; }
+    a { color: #244471; }
+    code { color: #244471; border-color: #ddd; background: #f7f9fb; }
+    .back-top { display: none; }
+    blockquote { background: #f7f9fb; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Sidebar / Table of Contents -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="chevrons">
+        <div class="chevron"></div>
+        <div class="chevron"></div>
+        <div class="chevron"></div>
+      </div>
+      <h2>WebVNC User Manual</h2>
+    </div>
+    <div class="version">Version 1.0.0 &middot; March 2026</div>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="#introduction" class="section-link">1. Introduction</a></li>
+      <li><a href="#system-requirements" class="section-link">2. System Requirements</a></li>
+      <li><a href="#installing-tightvnc" class="section-link">3. Installing TightVNC</a></li>
+        <li><a href="#tightvnc-download" class="sub-link">3.1 Download</a></li>
+        <li><a href="#tightvnc-install" class="sub-link">3.2 Run the Installer</a></li>
+        <li><a href="#tightvnc-custom" class="sub-link">3.3 Custom Installation</a></li>
+        <li><a href="#tightvnc-configure" class="sub-link">3.4 Configure Server</a></li>
+        <li><a href="#tightvnc-verify" class="sub-link">3.6 Verify Running</a></li>
+        <li><a href="#tightvnc-firewall" class="sub-link">3.7 Firewall</a></li>
+        <li><a href="#tightvnc-settings" class="sub-link">3.9 Settings Reference</a></li>
+      <li><a href="#installing-webvnc" class="section-link">4. Installing WebVNC</a></li>
+        <li><a href="#installer" class="sub-link">4.1 Using the Installer</a></li>
+        <li><a href="#manual-install" class="sub-link">4.2 Manual Installation</a></li>
+        <li><a href="#uninstalling" class="sub-link">4.3 Uninstalling</a></li>
+      <li><a href="#first-time-setup" class="section-link">5. First-Time Setup</a></li>
+      <li><a href="#connecting" class="section-link">6. Connecting</a></li>
+      <li><a href="#main-interface" class="section-link">7. The Main Interface</a></li>
+        <li><a href="#sidebar-section" class="sub-link">7.2 Sidebar</a></li>
+        <li><a href="#toolbar-section" class="sub-link">7.3 Toolbar</a></li>
+        <li><a href="#special-keys" class="sub-link">7.4 Special Keys</a></li>
+        <li><a href="#clipboard" class="sub-link">7.5 Clipboard</a></li>
+      <li><a href="#display-settings" class="section-link">8. Display &amp; Performance</a></li>
+      <li><a href="#saved-connections" class="section-link">9. Saved Connections</a></li>
+      <li><a href="#admin-panel" class="section-link">10. Administration</a></li>
+        <li><a href="#admin-users" class="sub-link">10.1 Users</a></li>
+        <li><a href="#admin-connections" class="sub-link">10.2 Connections</a></li>
+        <li><a href="#admin-audit" class="sub-link">10.3 Audit Log</a></li>
+        <li><a href="#admin-logging" class="sub-link">10.4 Logging</a></li>
+        <li><a href="#admin-license" class="sub-link">10.5 License</a></li>
+      <li><a href="#licensing" class="section-link">11. Licensing</a></li>
+      <li><a href="#tray-app" class="section-link">12. System Tray App</a></li>
+      <li><a href="#service-management" class="section-link">13. Service Management</a></li>
+      <li><a href="#configuration" class="section-link">14. Configuration</a></li>
+      <li><a href="#security" class="section-link">15. Security Features</a></li>
+      <li><a href="#tls-certificates" class="section-link">16. TLS Certificates</a></li>
+      <li><a href="#firewall" class="section-link">17. Firewall Configuration</a></li>
+      <li><a href="#troubleshooting" class="section-link">18. Troubleshooting</a></li>
+      <li><a href="#api-reference" class="section-link">19. API Reference</a></li>
+    </ul>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<main class="content">
+
+<h1>videowares <span class="brand-cyan">WebVNC</span></h1>
+<p class="subtitle">User Manual <span class="divider-chevron"></span> Version 1.0.0 <span class="divider-chevron"></span> Last updated: March 2026</p>
+
+<!-- ============================================================ -->
+<h2 id="introduction">1. Introduction</h2>
+
+<p><strong>videowares WebVNC</strong> is a web-based remote desktop client that lets you access VNC servers directly from a Chromium-based browser (Chrome, Edge, Brave, etc.) with no browser plugins or extensions required.</p>
+
+<h3>Key Features</h3>
+<ul>
+  <li><strong>Browser-based</strong> &mdash; No client software to install on the viewing machine</li>
+  <li><strong>Secure</strong> &mdash; HTTPS/TLS encryption, JWT authentication, CSRF protection</li>
+  <li><strong>Multi-user</strong> &mdash; Role-based access control (Admin, Operator, Viewer)</li>
+  <li><strong>Windows Service</strong> &mdash; Runs at boot without user login</li>
+  <li><strong>System Tray</strong> &mdash; Control panel for quick service management</li>
+  <li><strong>Audit Logging</strong> &mdash; Track all user activity</li>
+  <li><strong>Saved Connections</strong> &mdash; Store and share VNC connection profiles</li>
+</ul>
+
+<h3>How It Works</h3>
+<div class="diagram">Browser (WebVNC Client)
+    |
+    | HTTPS / WebSocket (WSS)
+    v
+WebVNC Server (port 6080)
+    |
+    | TCP
+    v
+VNC Server (e.g., TightVNC on port 5900)</div>
+
+<p>The WebVNC server acts as a secure bridge between your browser and VNC servers on the network. The browser connects to WebVNC over encrypted HTTPS/WebSocket, and WebVNC proxies the connection to the target VNC server over TCP.</p>
+
+<!-- ============================================================ -->
+<h2 id="system-requirements">2. System Requirements</h2>
+
+<h3>WebVNC Server (the machine running WebVNC)</h3>
+<table>
+  <thead><tr><th>Component</th><th>Requirement</th></tr></thead>
+  <tbody>
+    <tr><td>OS</td><td>Windows 10 or later (64-bit)</td></tr>
+    <tr><td>Processor</td><td>Intel Core i5 or equivalent (or better)</td></tr>
+    <tr><td>Disk</td><td>80 GB OS drive (minimum)</td></tr>
+    <tr><td>Memory</td><td>8 GB RAM (minimum)</td></tr>
+    <tr><td>Network</td><td>Port 6080 (configurable) open for inbound connections</td></tr>
+    <tr><td>Software</td><td>None (standalone executables included)</td></tr>
+  </tbody>
+</table>
+
+<h3>VNC Server (each remote machine)</h3>
+<table>
+  <thead><tr><th>Component</th><th>Requirement</th></tr></thead>
+  <tbody>
+    <tr><td>OS</td><td>Windows, Linux, or macOS</td></tr>
+    <tr><td>Processor</td><td>Intel Core i5 or equivalent (or better)</td></tr>
+    <tr><td>Disk</td><td>80 GB OS drive (minimum)</td></tr>
+    <tr><td>Memory</td><td>8 GB RAM (minimum)</td></tr>
+    <tr><td>Software</td><td>TightVNC, RealVNC, TigerVNC, or any VNC-compatible server</td></tr>
+    <tr><td>Network</td><td>Port 5900 (default) accessible from the WebVNC server</td></tr>
+  </tbody>
+</table>
+
+<h3>Client (the browser)</h3>
+<table>
+  <thead><tr><th>Component</th><th>Requirement</th></tr></thead>
+  <tbody>
+    <tr><td>Browser</td><td>Chrome 90+, Edge 90+, Brave, or any Chromium-based browser</td></tr>
+    <tr><td>JavaScript</td><td>Must be enabled</td></tr>
+    <tr><td>Network</td><td>HTTPS access to the WebVNC server on port 6080</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="installing-tightvnc">3. Installing TightVNC Server</h2>
+
+<p>TightVNC is a free, lightweight VNC server for Windows. Install it on every machine you want to control remotely through WebVNC.</p>
+
+<h3 id="tightvnc-download">3.1 Download TightVNC</h3>
+<ol>
+  <li>Visit <a href="https://www.tightvnc.com/download.php">https://www.tightvnc.com/download.php</a></li>
+  <li>Download the <strong>TightVNC Installer for Windows</strong> (64-bit recommended)</li>
+  <li>The file will be named something like <code>tightvnc-2.8.85-gpl-setup-64bit.msi</code></li>
+</ol>
+
+<h3 id="tightvnc-install">3.2 Run the Installer</h3>
+<ol>
+  <li>Double-click the downloaded <code>.msi</code> file</li>
+  <li>Click <strong>Next</strong> on the Welcome screen</li>
+  <li>Accept the license agreement and click <strong>Next</strong></li>
+  <li>On the <strong>Choose Setup Type</strong> screen, select:
+    <ul>
+      <li><strong>Custom</strong> if you only need the VNC Server (recommended for remote machines)</li>
+      <li><strong>Typical</strong> if you want both Server and Viewer components</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="tightvnc-custom">3.3 Custom Installation (Server Only)</h3>
+<p>If you selected Custom:</p>
+<ol>
+  <li>Click on <strong>TightVNC Viewer</strong> and select <strong>Entire feature will be unavailable</strong> (WebVNC replaces the viewer)</li>
+  <li>Keep <strong>TightVNC Server</strong> enabled</li>
+  <li>Click <strong>Next</strong></li>
+</ol>
+
+<h3 id="tightvnc-configure">3.4 Configure TightVNC Server</h3>
+<p>During installation, you will be prompted to configure the server:</p>
+
+<h4>Set Passwords</h4>
+<ul>
+  <li><strong>Password for Remote Access</strong>: This is the VNC connection password. Set a strong password and remember it &mdash; you will need it when connecting from WebVNC.</li>
+  <li><strong>Administrative Password</strong>: Used to change TightVNC settings later. Can be the same or different.</li>
+</ul>
+
+<blockquote>
+  <p><strong>Important:</strong> The remote access password is what you will enter in WebVNC when creating a connection profile.</p>
+</blockquote>
+
+<h4>Recommended Settings</h4>
+<table>
+  <thead><tr><th>Setting</th><th>Recommended Value</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Accept connections on port</td><td>5900</td><td>Default VNC port</td></tr>
+    <tr><td>Require VNC authentication</td><td>Checked</td><td>Always require a password</td></tr>
+    <tr><td>Allow loopback connections</td><td>Checked</td><td>Allows local testing</td></tr>
+    <tr><td>Enable file transfers</td><td>Unchecked</td><td>Not supported by WebVNC</td></tr>
+    <tr><td>Run as service</td><td>Checked</td><td>Start VNC at Windows boot</td></tr>
+    <tr><td>Block remote input</td><td>Unchecked</td><td>Unless you want view-only</td></tr>
+  </tbody>
+</table>
+
+<h3>3.5 Complete Installation</h3>
+<ol>
+  <li>Click <strong>Next</strong> and then <strong>Install</strong></li>
+  <li>Wait for installation to complete</li>
+  <li>Click <strong>Finish</strong></li>
+</ol>
+<p>TightVNC Server will start automatically as a Windows Service.</p>
+
+<h3 id="tightvnc-verify">3.6 Verify TightVNC is Running</h3>
+<ol>
+  <li>Look for the TightVNC icon in the Windows system tray (bottom-right, near the clock).</li>
+  <li>Alternatively, open <strong>Services</strong> (press <code>Win+R</code>, type <code>services.msc</code>, press Enter) and find <strong>TightVNC Server</strong>. Status should be <strong>Running</strong>.</li>
+</ol>
+
+<h3 id="tightvnc-firewall">3.7 Configure Windows Firewall for TightVNC</h3>
+<p>TightVNC typically configures the firewall during installation. If remote connections fail, open an elevated PowerShell and run:</p>
+<pre><code>New-NetFirewallRule -DisplayName "TightVNC Server" `
+  -Direction Inbound -Protocol TCP -LocalPort 5900 `
+  -Action Allow -Profile Domain,Private</code></pre>
+
+<h3>3.8 TightVNC on Multiple Machines</h3>
+<p>Repeat the installation on every Windows machine you want to access remotely. Each machine will run TightVNC Server on port 5900 and be accessible from WebVNC by its IP address or hostname.</p>
+
+<blockquote class="success">
+  <p><strong>Tip:</strong> For non-Windows machines, use TigerVNC (Linux) or the built-in Screen Sharing (macOS). The VNC protocol is cross-platform.</p>
+</blockquote>
+
+<h3 id="tightvnc-settings">3.9 TightVNC Settings Reference</h3>
+<p>After installation, right-click the TightVNC tray icon and select <strong>Configuration</strong>:</p>
+<table>
+  <thead><tr><th>Setting</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Main Server Port</strong></td><td>TCP port for VNC connections (default: 5900)</td></tr>
+    <tr><td><strong>Web Access Port</strong></td><td>TightVNC's built-in web server (default: 5800). Not needed with WebVNC.</td></tr>
+    <tr><td><strong>Primary Password</strong></td><td>Password for VNC connections</td></tr>
+    <tr><td><strong>View-Only Password</strong></td><td>Optional separate password for read-only access</td></tr>
+    <tr><td><strong>Allow Loopback</strong></td><td>Allow connections from localhost</td></tr>
+    <tr><td><strong>Use Mirror Driver</strong></td><td>Faster screen capture (if installed)</td></tr>
+    <tr><td><strong>Grab Transparent Windows</strong></td><td>Capture layered/transparent windows</td></tr>
+    <tr><td><strong>Block Remote Input</strong></td><td>Prevent remote keyboard/mouse</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="installing-webvnc">4. Installing videowares WebVNC</h2>
+
+<h3 id="installer">4.1 Using the Installer (Recommended)</h3>
+<ol>
+  <li>Obtain the installer file: <code>WebVNCSetup_x.x.x.xxxxx.exe</code></li>
+  <li>Right-click and select <strong>Run as administrator</strong></li>
+  <li>Follow the installation wizard</li>
+</ol>
+
+<h4>Installation Options</h4>
+<table>
+  <thead><tr><th>Option</th><th>Description</th><th>Default</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Start the service now</strong></td><td>Starts WebVNC immediately after install</td><td>Checked</td></tr>
+    <tr><td><strong>Start tray on login</strong></td><td>Adds tray icon to Windows startup</td><td>Checked</td></tr>
+    <tr><td><strong>Create desktop icon</strong></td><td>Shortcut on desktop</td><td>Unchecked</td></tr>
+  </tbody>
+</table>
+
+<p>The installer will:</p>
+<ul>
+  <li>Copy files to <code>C:\Program Files\videowares WebVNC\</code></li>
+  <li>Create data directories at <code>C:\ProgramData\WebVNC\</code></li>
+  <li>Register and configure the Windows Service</li>
+  <li>Set up log rotation</li>
+  <li>Optionally start the service and tray app</li>
+</ul>
+
+<h4>Installation Directories</h4>
+<table>
+  <thead><tr><th>Path</th><th>Contents</th></tr></thead>
+  <tbody>
+    <tr><td><code>C:\Program Files\videowares WebVNC\</code></td><td>Application executables, client files, configuration</td></tr>
+    <tr><td><code>C:\ProgramData\WebVNC\data\</code></td><td>SQLite database (<code>webvnc.db</code>)</td></tr>
+    <tr><td><code>C:\ProgramData\WebVNC\data\tls\</code></td><td>Auto-generated TLS certificates</td></tr>
+    <tr><td><code>C:\ProgramData\WebVNC\logs\</code></td><td>Service log files</td></tr>
+    <tr><td><code>%LocalAppData%\WebVNC\</code></td><td>Tray application logs</td></tr>
+  </tbody>
+</table>
+
+<h3 id="manual-install">4.2 Manual Installation (Without Installer)</h3>
+<ol>
+  <li>Copy the <code>dist\WebVNC\</code> folder to your desired location (e.g., <code>C:\WebVNC\</code>)</li>
+  <li>Open an <strong>Administrator Command Prompt</strong></li>
+  <li>Navigate to the folder and run:
+<pre><code>manage_service.bat install
+manage_service.bat start</code></pre>
+  </li>
+  <li>Optionally, run <code>WebVNC.exe</code> for the system tray control panel</li>
+</ol>
+
+<h3 id="uninstalling">4.3 Uninstalling</h3>
+<ol>
+  <li>Open <strong>Settings &gt; Apps &gt; Installed Apps</strong></li>
+  <li>Find <strong>videowares WebVNC</strong> and click <strong>Uninstall</strong></li>
+</ol>
+
+<blockquote class="warning">
+  <p><strong>Note:</strong> The database at <code>C:\ProgramData\WebVNC\data\</code> is <strong>not</strong> removed during uninstall to preserve your configuration. Delete it manually for a clean removal.</p>
+</blockquote>
+
+<!-- ============================================================ -->
+<h2 id="first-time-setup">5. First-Time Setup</h2>
+
+<h3>5.1 Access the Web Interface</h3>
+<ol>
+  <li>Open a Chromium-based browser (Chrome, Edge, Brave)</li>
+  <li>Navigate to: <strong>https://localhost:6080</strong></li>
+  <li>You will see a browser security warning (self-signed certificate):
+    <ul>
+      <li><strong>Chrome/Edge</strong>: Click <strong>Advanced</strong> then <strong>Proceed to localhost (unsafe)</strong></li>
+      <li>This is safe &mdash; the connection is still encrypted</li>
+    </ul>
+  </li>
+</ol>
+
+<h3>5.2 Log In with Default Credentials</h3>
+<table>
+  <thead><tr><th>Field</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Username</td><td><code>admin</code></td></tr>
+    <tr><td>Password</td><td><code>admin</code></td></tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p><strong>Important:</strong> You will be prompted to change your password on first login. Choose a strong password (minimum 8 characters).</p>
+</blockquote>
+
+<h3>5.3 Create Additional Users</h3>
+<ol>
+  <li>Click <strong>Admin Panel</strong> in the sidebar</li>
+  <li>Go to the <strong>Users</strong> tab</li>
+  <li>Click <strong>Add User</strong> and fill in username, password, and role</li>
+</ol>
+
+<h4>User Roles</h4>
+<table>
+  <thead><tr><th>Role</th><th>Permissions</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Admin</strong></td><td>Full access. Manage users, connections, licenses, settings. View audit logs.</td></tr>
+    <tr><td><strong>Operator</strong></td><td>Use assigned connections. Create and manage own connections.</td></tr>
+    <tr><td><strong>Viewer</strong></td><td>View-only access to assigned connections. No keyboard or mouse input.</td></tr>
+  </tbody>
+</table>
+
+<h3>5.4 Add Your First VNC Connection</h3>
+<ol>
+  <li>In the sidebar, fill in the <strong>New Connection</strong> form:
+    <ul>
+      <li><strong>Name</strong>: A friendly label (e.g., "Office PC")</li>
+      <li><strong>Host</strong>: IP address of the machine running TightVNC</li>
+      <li><strong>Port</strong>: 5900 (default)</li>
+      <li><strong>Password</strong>: The TightVNC remote access password</li>
+    </ul>
+  </li>
+  <li>Click <strong>Connect</strong></li>
+</ol>
+
+<!-- ============================================================ -->
+<h2 id="connecting">6. Connecting to a Remote Desktop</h2>
+
+<h3>6.1 Quick Connect</h3>
+<p>Use the <strong>New Connection</strong> form in the sidebar for one-time connections. Enter Host, Port, and optionally a Name and Password, then click <strong>Connect</strong>.</p>
+
+<h3>6.2 Using Saved Connections</h3>
+<p>Click any connection in the <strong>My Connections</strong> list to connect instantly with saved credentials.</p>
+
+<h3>6.3 Connection Status</h3>
+<p>The toolbar shows a <strong>green dot</strong> and <code>host:port</code> during an active connection.</p>
+
+<h3>6.4 Disconnecting</h3>
+<p>Click the red <strong>Disconnect</strong> button in the toolbar, or close the browser tab.</p>
+
+<h3>6.5 Free Mode Limitations</h3>
+<table>
+  <thead><tr><th>Limitation</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Session length</td><td>5 minutes maximum</td></tr>
+    <tr><td>Cooldown between sessions</td><td>5 minutes</td></tr>
+    <tr><td>Watermark</td><td>Displayed on screen</td></tr>
+  </tbody>
+</table>
+<p>A countdown timer appears in the toolbar. Purchase a license to remove all limitations.</p>
+
+<!-- ============================================================ -->
+<h2 id="main-interface">7. The Main Interface</h2>
+
+<h3>7.1 Layout Overview</h3>
+<div class="diagram">+------------------------------------------+
+| Sidebar          | Toolbar               |
+| +Logo &amp; Title    | [Connection Info]     |
+| +User Info       | [Keys][Clip][FS][Scl] |
+| +New Connection  |                       |
+| +Settings        |  Remote Desktop View  |
+| +My Connections  |  (VNC Canvas)         |
+|                  |                       |
++------------------------------------------+</div>
+
+<h3 id="sidebar-section">7.2 Sidebar</h3>
+<ul>
+  <li><strong>Logo and Title</strong>: "WebVNC" branding</li>
+  <li><strong>User Information</strong>: Your username and role badge</li>
+  <li><strong>Logout Button</strong>: End your session</li>
+  <li><strong>Admin Panel Button</strong>: Admin users only</li>
+  <li><strong>New Connection Form</strong>: Quick-connect fields</li>
+  <li><strong>Settings</strong>: Expandable display and performance options</li>
+  <li><strong>My Connections</strong>: Saved connections list</li>
+</ul>
+
+<h3 id="toolbar-section">7.3 Toolbar</h3>
+<table>
+  <thead><tr><th>Button</th><th>Function</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Connection Info</strong></td><td>Shows <code>host:port</code> with green status indicator</td></tr>
+    <tr><td><strong>Keys</strong></td><td>Send special key combinations</td></tr>
+    <tr><td><strong>Clipboard</strong></td><td>Clipboard sharing panel</td></tr>
+    <tr><td><strong>Fullscreen</strong></td><td>Toggle fullscreen mode</td></tr>
+    <tr><td><strong>Scale</strong></td><td>Cycle: Fit &rarr; Manual Zoom &rarr; 1:1</td></tr>
+    <tr><td><strong>Disconnect</strong></td><td>End the VNC connection</td></tr>
+  </tbody>
+</table>
+
+<h3 id="special-keys">7.4 Special Keys</h3>
+<table>
+  <thead><tr><th>Key Combination</th><th>Use Case</th></tr></thead>
+  <tbody>
+    <tr><td>Ctrl+Alt+Del</td><td>Open Windows Security / Task Manager</td></tr>
+    <tr><td>Ctrl+Alt+F1</td><td>Switch to Linux TTY1</td></tr>
+    <tr><td>Ctrl+Alt+F2</td><td>Switch to Linux TTY2</td></tr>
+    <tr><td>Tab</td><td>Tab key (browser may intercept)</td></tr>
+    <tr><td>Escape</td><td>Escape key</td></tr>
+    <tr><td>Ctrl+C / Ctrl+V / Ctrl+Z</td><td>Copy / Paste / Undo</td></tr>
+    <tr><td>Super (Win)</td><td>Windows / Meta key</td></tr>
+  </tbody>
+</table>
+
+<h3 id="clipboard">7.5 Clipboard Sharing</h3>
+<ul>
+  <li><strong>Paste to Remote</strong>: Type or paste text into the text area and click <strong>Send</strong></li>
+  <li><strong>Copy from Remote</strong>: Text copied on the remote desktop appears automatically (if supported)</li>
+</ul>
+<blockquote><p><strong>Note:</strong> Clipboard sharing works with text only. Image and file contents are not supported.</p></blockquote>
+
+<!-- ============================================================ -->
+<h2 id="display-settings">8. Display &amp; Performance Settings</h2>
+
+<p>Expand <strong>Settings</strong> in the sidebar to configure these options. Changes are saved per-browser.</p>
+
+<h3>8.1 Display Quality</h3>
+<table>
+  <thead><tr><th>Setting</th><th>Options</th><th>Default</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Quality Level</strong></td><td>0-9</td><td>6</td><td>Higher = better quality, more bandwidth</td></tr>
+    <tr><td><strong>Compression Level</strong></td><td>0-9</td><td>2</td><td>Higher = more CPU, less bandwidth</td></tr>
+    <tr><td><strong>Color Depth</strong></td><td>24-bit / 8-bit</td><td>24-bit</td><td>Use 8-bit for very slow connections</td></tr>
+    <tr><td><strong>Prefer H.264</strong></td><td>On/Off</td><td>Off</td><td>H.264 encoding if server supports it</td></tr>
+  </tbody>
+</table>
+
+<h4>Recommendations by Network Speed</h4>
+<table>
+  <thead><tr><th>Network</th><th>Quality</th><th>Compression</th><th>Color</th></tr></thead>
+  <tbody>
+    <tr><td>LAN (1 Gbps)</td><td>9</td><td>0</td><td>24-bit</td></tr>
+    <tr><td>Fast Internet (50+ Mbps)</td><td>6</td><td>2</td><td>24-bit</td></tr>
+    <tr><td>Slow Internet (&lt;10 Mbps)</td><td>3</td><td>6</td><td>24-bit</td></tr>
+    <tr><td>Very slow (&lt;1 Mbps)</td><td>1</td><td>9</td><td>8-bit</td></tr>
+  </tbody>
+</table>
+
+<h3>8.2 Scaling &amp; Layout</h3>
+<table>
+  <thead><tr><th>Setting</th><th>Options</th><th>Default</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Scale Mode</strong></td><td>Fit / Manual / 1:1</td><td>Fit</td><td>How remote desktop fits the browser</td></tr>
+    <tr><td><strong>Manual Zoom</strong></td><td>25%-200%</td><td>100%</td><td>Active when Scale Mode is Manual</td></tr>
+    <tr><td><strong>Resize Remote</strong></td><td>On/Off</td><td>Off</td><td>Request VNC server to change resolution</td></tr>
+    <tr><td><strong>Clip Viewport</strong></td><td>On/Off</td><td>Off</td><td>Show scrollbars when content exceeds window</td></tr>
+    <tr><td><strong>Lock Aspect Ratio</strong></td><td>On/Off</td><td>On</td><td>Maintain proportions when scaling</td></tr>
+  </tbody>
+</table>
+
+<h3>8.3 Performance</h3>
+<table>
+  <thead><tr><th>Setting</th><th>Options</th><th>Default</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Frame Rate Limit</strong></td><td>Unlimited / 60 / 30 / 15 FPS</td><td>Unlimited</td><td>Cap frame rate to reduce bandwidth</td></tr>
+    <tr><td><strong>Cursor Mode</strong></td><td>Local / Remote / Hidden</td><td>Local</td><td>Local is faster, Remote is more accurate</td></tr>
+    <tr><td><strong>Shared Session</strong></td><td>On/Off</td><td>On</td><td>Allow multiple viewers on same VNC session</td></tr>
+    <tr><td><strong>WebSocket Compression</strong></td><td>On/Off</td><td>Off</td><td>Compress traffic (adds CPU overhead)</td></tr>
+  </tbody>
+</table>
+
+<h3>8.4 Input</h3>
+<table>
+  <thead><tr><th>Setting</th><th>Options</th><th>Default</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>View Only</strong></td><td>On/Off</td><td>Off</td><td>Disable keyboard and mouse to remote</td></tr>
+    <tr><td><strong>Keyboard Grab</strong></td><td>On/Off</td><td>On</td><td>Capture special keys for remote</td></tr>
+    <tr><td><strong>Touch Input Mode</strong></td><td>On/Off</td><td>Off</td><td>Touch-based viewport navigation</td></tr>
+  </tbody>
+</table>
+
+<h3>8.5 Connection</h3>
+<table>
+  <thead><tr><th>Setting</th><th>Options</th><th>Default</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Connection Timeout</strong></td><td>5-120 sec</td><td>10</td><td>Wait time for VNC server response</td></tr>
+    <tr><td><strong>Auto-Reconnect</strong></td><td>On/Off</td><td>Off</td><td>Auto reconnect on disconnection</td></tr>
+    <tr><td><strong>Reconnect Delay</strong></td><td>1-60 sec</td><td>3</td><td>Wait between reconnection attempts</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="saved-connections">9. Managing Saved Connections</h2>
+
+<h3>9.1 Connection Properties</h3>
+<table>
+  <thead><tr><th>Property</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Name</strong></td><td>Friendly display name</td></tr>
+    <tr><td><strong>Host</strong></td><td>IP address or hostname of the VNC server</td></tr>
+    <tr><td><strong>Port</strong></td><td>VNC server port (default: 5900)</td></tr>
+    <tr><td><strong>Password</strong></td><td>Encrypted at rest with AES-256-GCM</td></tr>
+  </tbody>
+</table>
+
+<h3>9.2 Connection Visibility</h3>
+<ul>
+  <li><strong>Admin</strong> users can see and manage all connections</li>
+  <li><strong>Operator</strong> users see connections assigned to them plus their own</li>
+  <li><strong>Viewer</strong> users see only connections assigned to them</li>
+</ul>
+
+<h3>9.3 Sharing Connections (Admin)</h3>
+<ol>
+  <li>Open <strong>Admin Panel &gt; Connections</strong></li>
+  <li>Click the share icon next to a connection</li>
+  <li>Select which users should have access</li>
+  <li>Click <strong>Save</strong></li>
+</ol>
+
+<!-- ============================================================ -->
+<h2 id="admin-panel">10. Administration Panel</h2>
+
+<p>Click <strong>Admin Panel</strong> in the sidebar (visible to Admin users only).</p>
+
+<h3 id="admin-users">10.1 Users Tab</h3>
+<table>
+  <thead><tr><th>Action</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Add User</strong></td><td>Create account with username, password (min 8 chars), and role</td></tr>
+    <tr><td><strong>Edit User</strong></td><td>Change role or display name</td></tr>
+    <tr><td><strong>Reset Password</strong></td><td>Force password change on next login</td></tr>
+    <tr><td><strong>Disable User</strong></td><td>Prevent login (account preserved, can be re-enabled)</td></tr>
+  </tbody>
+</table>
+<blockquote><p><strong>Note:</strong> The last remaining admin account cannot be deleted or demoted.</p></blockquote>
+
+<h3 id="admin-connections">10.2 Connections Tab</h3>
+<table>
+  <thead><tr><th>Action</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Add Connection</strong></td><td>Create a new VNC connection profile</td></tr>
+    <tr><td><strong>Edit Connection</strong></td><td>Modify host, port, name, or password</td></tr>
+    <tr><td><strong>Delete Connection</strong></td><td>Remove a connection profile</td></tr>
+    <tr><td><strong>Assign Users</strong></td><td>Share a connection with specific users</td></tr>
+  </tbody>
+</table>
+
+<h3 id="admin-audit">10.3 Audit Log Tab</h3>
+<p>Browse paginated log entries (50 per page), filterable by action type:</p>
+<table>
+  <thead><tr><th>Action</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>Login / Login Failed</td><td>User authentication events</td></tr>
+    <tr><td>Logout</td><td>User session ended</td></tr>
+    <tr><td>VNC Connect / Disconnect</td><td>Remote desktop sessions</td></tr>
+    <tr><td>User Create / Update / Delete</td><td>Account management</td></tr>
+    <tr><td>Password Change / Reset</td><td>Credential changes</td></tr>
+    <tr><td>Connection Create / Delete</td><td>VNC profile management</td></tr>
+    <tr><td>License Update</td><td>License file uploaded</td></tr>
+  </tbody>
+</table>
+
+<h3 id="admin-logging">10.4 Logging Tab</h3>
+<table>
+  <thead><tr><th>Setting</th><th>Options</th><th>Default</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Audit Retention</strong></td><td>7 / 30 / 60 / 90 / 180 / 365 days / Never</td><td>90 days</td></tr>
+    <tr><td><strong>Log Level</strong></td><td>Debug / Info / Warning / Error</td><td>Info</td></tr>
+  </tbody>
+</table>
+<p>Additional actions: <strong>Purge Now</strong>, <strong>Download Service Log</strong>, <strong>Refresh Stats</strong>.</p>
+
+<h3 id="admin-license">10.5 License Tab</h3>
+<p>View license status, upload new licenses, and see usage limits. See <a href="#licensing">Section 11</a> for details.</p>
+
+<!-- ============================================================ -->
+<h2 id="licensing">11. Licensing</h2>
+
+<h3>11.1 Free Mode vs Licensed</h3>
+<table>
+  <thead><tr><th>Feature</th><th>Free Mode</th><th>Licensed</th></tr></thead>
+  <tbody>
+    <tr><td>Session length</td><td>5 minutes</td><td>Unlimited</td></tr>
+    <tr><td>Cooldown between sessions</td><td>5 minutes</td><td>None</td></tr>
+    <tr><td>Watermark overlay</td><td>Yes</td><td>No</td></tr>
+    <tr><td>Users &amp; connections</td><td>Unlimited</td><td>Per license</td></tr>
+    <tr><td>All other features</td><td>Full access</td><td>Full access</td></tr>
+  </tbody>
+</table>
+
+<h3>11.2 Uploading a License</h3>
+<ol>
+  <li>Open <strong>Admin Panel &gt; License</strong></li>
+  <li>Paste the full license file contents into the text area</li>
+  <li>Click <strong>Upload License</strong></li>
+</ol>
+
+<h3>11.3 Grace Period</h3>
+<p>When a license expires, a <strong>7-day grace period</strong> allows uninterrupted operation. After the grace period, the application reverts to free mode.</p>
+
+<!-- ============================================================ -->
+<h2 id="tray-app">12. System Tray Application</h2>
+
+<h3>12.1 Tray Icon Colors</h3>
+<table>
+  <thead><tr><th>Color</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td style="color: var(--mint);"><strong>Green</strong></td><td>Service is running and healthy</td></tr>
+    <tr><td style="color: var(--warning-yellow);"><strong>Yellow</strong></td><td>Service is starting or not yet responding</td></tr>
+    <tr><td style="color: var(--alert-red);"><strong>Red</strong></td><td>Service is stopped or not installed</td></tr>
+  </tbody>
+</table>
+
+<h3>12.2 Menu Options</h3>
+<table>
+  <thead><tr><th>Option</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Open Web Interface</strong></td><td>Opens https://localhost:6080 (also: double-click icon)</td></tr>
+    <tr><td><strong>Start Service</strong></td><td>Start the Windows Service (UAC elevation)</td></tr>
+    <tr><td><strong>Stop Service</strong></td><td>Stop the service (UAC elevation)</td></tr>
+    <tr><td><strong>Restart Service</strong></td><td>Stop and restart</td></tr>
+    <tr><td><strong>Show Service Log</strong></td><td>Open log in default text editor</td></tr>
+    <tr><td><strong>Start Tray with Windows</strong></td><td>Toggle auto-start on login</td></tr>
+    <tr><td><strong>Exit</strong></td><td>Close tray app (service keeps running)</td></tr>
+  </tbody>
+</table>
+
+<h3>12.3 Tray Log Location</h3>
+<pre><code>%LocalAppData%\WebVNC\tray.log</code></pre>
+<p>Rotated at 5 MB with 3 backup files.</p>
+
+<!-- ============================================================ -->
+<h2 id="service-management">13. Service Management</h2>
+
+<h3>13.1 Using manage_service.bat</h3>
+<pre><code>manage_service.bat install    :: Install the Windows Service
+manage_service.bat remove     :: Remove the Windows Service
+manage_service.bat start      :: Start the service
+manage_service.bat stop       :: Stop the service
+manage_service.bat restart    :: Restart the service
+manage_service.bat status     :: Show service status</code></pre>
+<p>Run without arguments for an interactive menu. Requires Administrator.</p>
+
+<h3>13.2 Using PowerShell</h3>
+<pre><code># Check status
+sc.exe query WebVNC
+
+# Start service
+sc.exe start WebVNC
+
+# Stop service
+sc.exe stop WebVNC</code></pre>
+
+<blockquote class="warning">
+  <p><strong>Important:</strong> In PowerShell, always use <code>sc.exe</code> (not <code>sc</code>). The <code>sc</code> alias maps to <code>Set-Content</code>.</p>
+</blockquote>
+
+<h3>13.3 Service Details</h3>
+<table>
+  <thead><tr><th>Property</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Service Name</td><td><code>WebVNC</code></td></tr>
+    <tr><td>Display Name</td><td>videowares WebVNC</td></tr>
+    <tr><td>Startup Type</td><td>Automatic (starts at boot)</td></tr>
+    <tr><td>Log On As</td><td>Local System</td></tr>
+    <tr><td>Log File</td><td><code>C:\ProgramData\WebVNC\logs\service.log</code></td></tr>
+    <tr><td>Log Rotation</td><td>10 MB per file, 3 backups</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="configuration">14. Configuration Reference</h2>
+
+<h3>14.1 Configuration File</h3>
+<ul>
+  <li><strong>Installed</strong>: <code>C:\Program Files\videowares WebVNC\config.json</code></li>
+  <li><strong>Fallback</strong>: <code>config\default.json</code> (built-in defaults)</li>
+</ul>
+
+<h3>14.2 All Settings</h3>
+<table>
+  <thead><tr><th>Setting</th><th>Default</th><th>Env Variable</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>port</code></td><td>6080</td><td><code>PORT</code></td><td>HTTPS listening port</td></tr>
+    <tr><td><code>dbPath</code></td><td>./data/webvnc.db</td><td><code>WEBVNC_DB_PATH</code></td><td>SQLite database path</td></tr>
+    <tr><td><code>jwtSecret</code></td><td><em>(auto)</em></td><td><code>WEBVNC_JWT_SECRET</code></td><td>JWT signing secret</td></tr>
+    <tr><td><code>jwtExpiry</code></td><td>8h</td><td><code>WEBVNC_JWT_EXPIRY</code></td><td>JWT token lifetime</td></tr>
+    <tr><td><code>masterKey</code></td><td><em>(auto)</em></td><td><code>WEBVNC_MASTER_KEY</code></td><td>Password encryption key</td></tr>
+    <tr><td><code>tlsCert</code></td><td><em>(empty)</em></td><td><code>WEBVNC_TLS_CERT</code></td><td>Custom TLS certificate path</td></tr>
+    <tr><td><code>tlsKey</code></td><td><em>(empty)</em></td><td><code>WEBVNC_TLS_KEY</code></td><td>Custom TLS private key path</td></tr>
+    <tr><td><code>allowPrivateIPs</code></td><td>true</td><td>&mdash;</td><td>Allow LAN IP connections</td></tr>
+    <tr><td><code>logLevel</code></td><td>info</td><td><code>WEBVNC_LOG_LEVEL</code></td><td>debug / info / warn / error</td></tr>
+    <tr><td><code>auditRetentionDays</code></td><td>90</td><td>&mdash;</td><td>Days to keep audit logs</td></tr>
+    <tr><td><code>serviceLogPath</code></td><td>./logs/service.log</td><td><code>WEBVNC_SERVICE_LOG</code></td><td>Service log file path</td></tr>
+    <tr><td><code>rateLimitMax</code></td><td>10</td><td>&mdash;</td><td>Login attempts per 15 min</td></tr>
+    <tr><td><code>apiRateLimitMax</code></td><td>100</td><td>&mdash;</td><td>API requests per minute</td></tr>
+    <tr><td><code>trustProxy</code></td><td>false</td><td>&mdash;</td><td>Trust X-Forwarded-* headers</td></tr>
+  </tbody>
+</table>
+
+<h3>14.3 Changing the Port</h3>
+<p>Edit <code>config.json</code>:</p>
+<pre><code>{
+  "port": 8443
+}</code></pre>
+<p>Then restart: <code>manage_service.bat restart</code></p>
+
+<h3>14.4 Using a Custom TLS Certificate</h3>
+<pre><code>{
+  "tlsCert": "C:\\certs\\fullchain.pem",
+  "tlsKey": "C:\\certs\\privkey.pem"
+}</code></pre>
+
+<!-- ============================================================ -->
+<h2 id="security">15. Security Features</h2>
+
+<h3>15.1 Encryption</h3>
+<ul>
+  <li>All traffic uses <strong>HTTPS/TLS</strong> and <strong>WSS</strong></li>
+  <li>Stored VNC passwords: <strong>AES-256-GCM</strong></li>
+  <li>User passwords: <strong>bcrypt</strong> hashing</li>
+</ul>
+
+<h3>15.2 Authentication</h3>
+<ul>
+  <li>JWT session tokens (8-hour default)</li>
+  <li>HTTP-only, Secure cookies</li>
+  <li>CSRF protection on state-changing endpoints</li>
+  <li>Forced password change on first login</li>
+  <li>Password history enforcement</li>
+</ul>
+
+<h3>15.3 Rate Limiting</h3>
+<table>
+  <thead><tr><th>Endpoint Type</th><th>Limit</th><th>Window</th></tr></thead>
+  <tbody>
+    <tr><td>Login</td><td>10 attempts</td><td>15 minutes</td></tr>
+    <tr><td>API</td><td>100 requests</td><td>1 minute</td></tr>
+    <tr><td>Admin endpoints</td><td>30 requests</td><td>1 minute</td></tr>
+  </tbody>
+</table>
+
+<h3>15.4 Access Control</h3>
+<ul>
+  <li>Role-based (Admin, Operator, Viewer)</li>
+  <li>Connection-level assignment</li>
+  <li>Viewer role enforces view-only server-side</li>
+</ul>
+
+<h3>15.5 Network Security</h3>
+<ul>
+  <li>SSRF protection (configurable)</li>
+  <li>DNS and port validation</li>
+  <li>HSTS headers (1-year max-age)</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="tls-certificates">16. TLS Certificates</h2>
+
+<h3>16.1 Self-Signed Certificates (Default)</h3>
+<ul>
+  <li><strong>Algorithm</strong>: RSA 2048-bit, SHA-256</li>
+  <li><strong>Validity</strong>: 90 days</li>
+  <li><strong>Auto-renewal</strong>: Regenerated when &le;30 days remain</li>
+  <li><strong>Location</strong>: <code>C:\ProgramData\WebVNC\data\tls\</code></li>
+</ul>
+
+<h3>16.2 Trusting the Self-Signed Certificate</h3>
+<p><strong>Option A: Browser exception</strong> &mdash; Click <strong>Advanced &gt; Proceed</strong> when prompted.</p>
+<p><strong>Option B: Install in Windows</strong></p>
+<ol>
+  <li>Navigate to https://localhost:6080 in Chrome/Edge</li>
+  <li>Click padlock &gt; <strong>Certificate</strong> &gt; <strong>Details</strong> &gt; <strong>Copy to File</strong></li>
+  <li>Export as <code>.cer</code>, double-click it &gt; <strong>Install Certificate</strong></li>
+  <li>Select <strong>Local Machine</strong> &gt; <strong>Trusted Root Certification Authorities</strong></li>
+  <li>Restart your browser</li>
+</ol>
+
+<h3>16.3 Certificate Expiry Monitoring</h3>
+<table>
+  <thead><tr><th>Days Remaining</th><th>Severity</th><th>Action</th></tr></thead>
+  <tbody>
+    <tr><td>30</td><td>Warning</td><td>Log warning (custom certs); auto-renew (self-signed)</td></tr>
+    <tr><td>14</td><td>Warning</td><td>Log warning</td></tr>
+    <tr><td>7</td><td>Warning</td><td>Log warning</td></tr>
+    <tr><td>0 (expired)</td><td>Error</td><td>Log error</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="firewall">17. Firewall Configuration</h2>
+
+<h3>17.1 WebVNC Server Rule</h3>
+<pre><code>New-NetFirewallRule -DisplayName "videowares WebVNC" `
+  -Direction Inbound -Protocol TCP -LocalPort 6080 `
+  -Action Allow -Profile Domain,Private `
+  -Description "Allow WebVNC web-based remote desktop access"</code></pre>
+
+<h3>17.2 TightVNC Server Rule</h3>
+<pre><code>New-NetFirewallRule -DisplayName "TightVNC Server" `
+  -Direction Inbound -Protocol TCP -LocalPort 5900 `
+  -Action Allow -Profile Domain,Private `
+  -Description "Allow VNC connections from WebVNC server"</code></pre>
+
+<h3>17.3 Restrict to Specific Subnet</h3>
+<pre><code>New-NetFirewallRule -DisplayName "videowares WebVNC (Restricted)" `
+  -Direction Inbound -Protocol TCP -LocalPort 6080 `
+  -Action Allow -Profile Domain,Private `
+  -RemoteAddress 192.168.1.0/24 `
+  -Description "Allow WebVNC from local subnet only"</code></pre>
+
+<h3>17.4 Remove a Firewall Rule</h3>
+<pre><code>Remove-NetFirewallRule -DisplayName "videowares WebVNC"</code></pre>
+
+<!-- ============================================================ -->
+<h2 id="troubleshooting">18. Troubleshooting</h2>
+
+<h3>18.1 Cannot Access https://localhost:6080</h3>
+<table>
+  <thead><tr><th>Check</th><th>Solution</th></tr></thead>
+  <tbody>
+    <tr><td>Service running?</td><td>Check tray icon or run <code>sc.exe query WebVNC</code></td></tr>
+    <tr><td>Correct port?</td><td>Check <code>config.json</code> for the <code>port</code> setting</td></tr>
+    <tr><td>Firewall blocking?</td><td>Add firewall rule (see <a href="#firewall">Section 17</a>)</td></tr>
+    <tr><td>Using HTTP?</td><td>WebVNC requires <code>https://</code> not <code>http://</code></td></tr>
+    <tr><td>Non-Chromium browser?</td><td>Use Chrome, Edge, or Brave</td></tr>
+  </tbody>
+</table>
+
+<h3>18.2 Browser Security Warning</h3>
+<p>Expected with self-signed certificates. Click <strong>Advanced &gt; Proceed</strong>. See <a href="#tls-certificates">Section 16.2</a> to suppress permanently.</p>
+
+<h3>18.3 Cannot Connect to VNC Server</h3>
+<table>
+  <thead><tr><th>Check</th><th>Solution</th></tr></thead>
+  <tbody>
+    <tr><td>TightVNC running?</td><td>Check TightVNC tray icon or Services</td></tr>
+    <tr><td>Correct IP/hostname?</td><td>Ping the target from the WebVNC server</td></tr>
+    <tr><td>Correct port?</td><td>Default is 5900; check TightVNC config</td></tr>
+    <tr><td>Firewall on target?</td><td>Ensure port 5900 is open</td></tr>
+    <tr><td>Correct password?</td><td>Re-enter the TightVNC password</td></tr>
+    <tr><td>Network connectivity?</td><td>Ensure WebVNC server can reach target on TCP 5900</td></tr>
+  </tbody>
+</table>
+
+<h3>18.4 Session Drops After 5 Minutes</h3>
+<p>You are in <strong>free mode</strong>. Wait 5 minutes for cooldown, or upload a license in Admin Panel &gt; License.</p>
+
+<h3>18.5 Service Fails to Start</h3>
+<p>Check the service log at <code>C:\ProgramData\WebVNC\logs\service.log</code></p>
+<table>
+  <thead><tr><th>Error</th><th>Solution</th></tr></thead>
+  <tbody>
+    <tr><td>Port in use</td><td>Change port in config.json or stop conflicting app</td></tr>
+    <tr><td>Database locked</td><td>Stop all WebVNC processes and restart</td></tr>
+    <tr><td>Permission denied</td><td>Ensure service runs as Local System</td></tr>
+  </tbody>
+</table>
+
+<h3>18.6 Forgot Admin Password</h3>
+<ol>
+  <li>Stop the service</li>
+  <li>Delete the database: <code>C:\ProgramData\WebVNC\data\webvnc.db</code></li>
+  <li>Start the service (fresh database created)</li>
+  <li>Log in with <code>admin</code> / <code>admin</code></li>
+</ol>
+<blockquote class="danger"><p><strong>Warning:</strong> This deletes all users, connections, audit logs, and settings.</p></blockquote>
+
+<h3>18.7 Tray Icon Not Visible</h3>
+<ol>
+  <li>Check if <code>WebVNC.exe</code> is running in Task Manager</li>
+  <li>Click the <strong>^</strong> arrow in the system tray for hidden icons</li>
+  <li>Right-click taskbar &gt; <strong>Taskbar settings</strong> &gt; <strong>Other system tray icons</strong> &gt; Enable WebVNC</li>
+</ol>
+
+<h3>18.8 Poor Display Performance</h3>
+<ol>
+  <li>Lower Quality Level to 3-5</li>
+  <li>Increase Compression Level to 5-7</li>
+  <li>Switch to 8-bit color depth</li>
+  <li>Enable Frame Rate Limit (30 or 15 FPS)</li>
+  <li>Ensure fast network between WebVNC and VNC server</li>
+</ol>
+
+<h3>18.9 Keyboard Shortcuts Not Working</h3>
+<ol>
+  <li>Enable <strong>Keyboard Grab</strong> in Settings</li>
+  <li>Use the <strong>Keys</strong> toolbar button for special combinations</li>
+  <li>Ensure you are not in <strong>View Only</strong> mode</li>
+</ol>
+
+<h3>18.10 PowerShell <code>sc</code> Returns Wrong Output</h3>
+<p>In PowerShell, <code>sc</code> is an alias for <code>Set-Content</code>. Always use <code>sc.exe</code>:</p>
+<pre><code># Wrong:
+sc query WebVNC
+
+# Correct:
+sc.exe query WebVNC</code></pre>
+
+<!-- ============================================================ -->
+<h2 id="api-reference">19. Appendix: API Reference</h2>
+
+<p>All endpoints require HTTPS. State-changing requests require the <code>X-WebVNC-CSRF</code> header.</p>
+
+<h3>Health Check</h3>
+<pre><code>GET /health</code></pre>
+<p>No authentication required. Returns server status.</p>
+
+<h3>Authentication</h3>
+<table>
+  <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>POST</td><td><code>/api/v1/auth/login</code></td><td>Login (body: {username, password})</td></tr>
+    <tr><td>POST</td><td><code>/api/v1/auth/logout</code></td><td>Logout</td></tr>
+    <tr><td>GET</td><td><code>/api/v1/auth/me</code></td><td>Current user info</td></tr>
+    <tr><td>POST</td><td><code>/api/v1/auth/change-password</code></td><td>Change password</td></tr>
+    <tr><td>GET</td><td><code>/api/v1/auth/ws-token</code></td><td>Get WebSocket auth token</td></tr>
+  </tbody>
+</table>
+
+<h3>Users (Admin only)</h3>
+<table>
+  <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>GET</td><td><code>/api/v1/users</code></td><td>List all users</td></tr>
+    <tr><td>POST</td><td><code>/api/v1/users</code></td><td>Create user</td></tr>
+    <tr><td>GET</td><td><code>/api/v1/users/:id</code></td><td>Get user</td></tr>
+    <tr><td>PUT</td><td><code>/api/v1/users/:id</code></td><td>Update user</td></tr>
+    <tr><td>DELETE</td><td><code>/api/v1/users/:id</code></td><td>Disable user</td></tr>
+    <tr><td>POST</td><td><code>/api/v1/users/:id/reset-password</code></td><td>Force password reset</td></tr>
+  </tbody>
+</table>
+
+<h3>Connections</h3>
+<table>
+  <thead><tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>GET</td><td><code>/api/v1/connections</code></td><td>All</td><td>List connections (filtered by role)</td></tr>
+    <tr><td>POST</td><td><code>/api/v1/connections</code></td><td>Admin</td><td>Create connection</td></tr>
+    <tr><td>GET</td><td><code>/api/v1/connections/:id</code></td><td>All</td><td>Get connection</td></tr>
+    <tr><td>PUT</td><td><code>/api/v1/connections/:id</code></td><td>Admin</td><td>Update connection</td></tr>
+    <tr><td>DELETE</td><td><code>/api/v1/connections/:id</code></td><td>Admin</td><td>Delete connection</td></tr>
+    <tr><td>POST</td><td><code>/api/v1/connections/:id/share</code></td><td>Admin</td><td>Assign users</td></tr>
+  </tbody>
+</table>
+
+<h3>Audit (Admin only)</h3>
+<pre><code>GET /api/v1/audit?page=1&amp;limit=50&amp;action=login&amp;from=2026-01-01&amp;to=2026-12-31</code></pre>
+
+<h3>License (Admin only)</h3>
+<table>
+  <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>GET</td><td><code>/api/v1/license</code></td><td>License info</td></tr>
+    <tr><td>POST</td><td><code>/api/v1/license</code></td><td>Upload license</td></tr>
+    <tr><td>GET</td><td><code>/api/v1/license/status</code></td><td>Free mode / cooldown status</td></tr>
+  </tbody>
+</table>
+
+<h3>Settings (Admin only)</h3>
+<table>
+  <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>GET</td><td><code>/api/v1/settings</code></td><td>All settings</td></tr>
+    <tr><td>PUT</td><td><code>/api/v1/settings/:key</code></td><td>Update setting</td></tr>
+    <tr><td>GET</td><td><code>/api/v1/settings/logging/stats</code></td><td>Audit statistics</td></tr>
+    <tr><td>POST</td><td><code>/api/v1/settings/logging/purge</code></td><td>Purge old audit entries</td></tr>
+    <tr><td>GET</td><td><code>/api/v1/settings/logging/service-log</code></td><td>Download service log</td></tr>
+  </tbody>
+</table>
+
+<h3>WebSocket Proxy</h3>
+<pre><code>WSS /websockify?host=&lt;ip&gt;&amp;port=&lt;port&gt;&amp;token=&lt;ws-token&gt;&amp;compress=&lt;bool&gt;</code></pre>
+
+<!-- Footer -->
+<div class="footer">
+  <div class="footer-brand">
+    <div class="chevrons">
+      <div class="chevron"></div>
+      <div class="chevron"></div>
+      <div class="chevron"></div>
+    </div>
+    <strong style="color: var(--white);">videowares WebVNC</strong>
+  </div>
+  <p>Copyright videowares &middot; <a href="https://github.com/Stalt/WebVNC">github.com/Stalt/WebVNC</a></p>
+</div>
+
+</main>
+
+<!-- Back to top button -->
+<a href="#" class="back-top" id="backTop" title="Back to top">&uarr;</a>
+
+<script>
+  // Back-to-top visibility
+  const btn = document.getElementById('backTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+
+  // Highlight active sidebar link
+  const sections = document.querySelectorAll('h2[id], h3[id]');
+  const navLinks = document.querySelectorAll('.sidebar nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => {
+          l.classList.remove('active');
+          l.style.color = '';
+          l.style.borderLeftColor = '';
+        });
+        const active = document.querySelector(`.sidebar nav a[href="#${entry.target.id}"]`);
+        if (active) {
+          active.classList.add('active');
+        }
+      }
+    });
+  }, { rootMargin: '-80px 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
